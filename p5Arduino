@@ -1,0 +1,82 @@
+                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                                              var serial; // variable to hold an instance of the serialport library
+var portName = '/dev/tty.usbmodem14101'
+let inData = [];
+var serialString;
+let x = 400;
+let speed = 5;
+
+function setup() {
+  createCanvas(800, 600);
+serial = new p5.SerialPort();       // make a new instance of the serialport library
+  serial.on('list', printList);  // set a callback function for the serialport list event
+  serial.on('connected', serverConnected); // callback for connecting to the server
+  serial.on('open', portOpen);        // callback for the port opening
+  serial.on('data', serialEvent);     // callback for when new data arrives
+  serial.on('error', serialError);    // callback for errors
+  serial.on('close', portClose);      // callback for the port closing
+  serial.list();                      // list the serial ports
+  serial.open(portName);              // open a serial port
+}
+ 
+function serverConnected() {
+  console.log('connected to server.');
+}
+function portOpen() {
+  console.log('the serial port opened.')
+}
+function serialError(err) {
+  console.log('Something went wrong with the serial port. ' + err);
+}
+function portClose() {
+  console.log('The serial port closed.');
+}
+
+// get the list of ports:
+function printList(portList) {
+ // portList is an array of serial port names
+ for (var i = 0; i < portList.length; i++) {
+ // Display the list the console:
+ console.log(i + " " + portList[i]);
+ }
+}
+
+function serialEvent(){
+ 
+}
+
+function draw(){
+  background(0);
+
+   serialString =serial.readLine();
+  if (serialString.length != null ) {   
+  let splitString = split(serialString,";");
+    for(let i=0;i<3;i++){
+   inData[i]= Number(splitString[i]);     
+    }
+  if (inData[2]==0){
+     fill(230,5,108);
+  }else{
+    fill(125,175,44);
+  }
+    if(inData[0]==0){
+      x += speed;
+    }
+     if(inData[1]==0){
+      x -= speed;
+    }
+      console.log(inData);
+    if(x<0){
+    x = 0
+    }
+     if(x>400){
+    x = 400
+    }
+    
+  ellipse(x, height/2, 150, 150);
+
+    
+
+   }
+
+}
+
