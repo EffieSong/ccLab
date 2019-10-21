@@ -1,0 +1,67 @@
+let city = 'beijing';
+let gifSearch;
+let gifApi = 'https://api.giphy.com/v1/gifs/search?api_key=iTwgANoSTaC3mkuLCebTwGMiIhRZJYnt&q='+gifSearch+'&limit=25&offset=0&rating=G&lang=en';
+
+let weatherKey = '2ea637022509edb57f174177cef68907';
+let weatherApi='https://api.openweathermap.org/data/2.5/weather?q='+city+'&appid='+weatherKey;
+
+let input, button, greeting;
+let cityWeather;
+
+function setup() {
+  createCanvas(400, 200);
+
+  input = createInput();
+  input.position(20, 65);
+
+  button = createButton('submit');
+  button.position(input.x + input.width, 65);
+  button.mousePressed(greet);
+
+  greeting = createElement('h2', 'City');
+  greeting.position(20, 5);
+
+  textAlign(CENTER);
+  textSize(50);
+  
+}
+
+function greet() {
+  city = input.value();
+  greeting.html('hello ' + name + '!');
+  input.value('');
+  weatherApi='https://api.openweathermap.org/data/2.5/weather?q='+city+'&appid='+weatherKey;
+  console.log(weatherApi);
+  loadJSON(weatherApi,gotDataWeather);
+  
+}
+
+
+function gotDataWeather(weatherBack){
+  console.log(weatherBack);
+  console.log(weatherBack.weather[0].main);
+  cityWeather=weatherBack.weather[0].main;
+  
+  if(cityWeather === "Clear"){
+     console.log("I am clear");
+    gifSearch='blueSky';
+  }else if(cityWeather === "Clouds"){
+    console.log("I am clouds");
+    gifSearch='clouds'
+  }else if(cityWeather === "Drizzle"){
+    console.log("I am drizzle");
+    gifSearch='drizzle'
+  }else if(cityWeather === "Rain"){
+    console.log("I am rain");
+    gifSearch='rain'
+  }
+  
+  greeting.html(city+"is"+gifSearch);
+  gifApi= 'https://api.giphy.com/v1/gifs/search?api_key=iTwgANoSTaC3mkuLCebTwGMiIhRZJYnt&q='+gifSearch+'&limit=25&offset=0&rating=G&lang=en'
+    loadJSON(gifApi,gotDataGif);
+}
+
+function gotDataGif(giphy){
+     console.log(giphy.data[3].images.original.url);
+     createImg(giphy.data[3].images.original.url);
+    }
