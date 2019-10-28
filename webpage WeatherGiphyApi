@@ -1,0 +1,40 @@
+// Giphy variables---------------------
+let giphySearch = 'funny';
+let giphyapi = 'https://api.giphy.com/v1/gifs/search?api_key=rMXuwMjUUGR9Zdv2mmtdGWqAE0NOLUb0&q=';
+let giphyLimtit = '&limit=25&offset=0&rating=G&lang=en';//how many pictures do you want
+let giphyLink;
+let input;
+
+// Weather variables---------------------
+let city = 'seattle';
+let weatherKey = '&APPID=2ea637022509edb57f174177cef68907';
+let weatherapi = 'http://api.openweathermap.org/data/2.5/weather?q=';
+let weatherlink = weatherapi + city +weatherKey ;
+function setup(){
+    console.log('works');
+  loadJSON(weatherlink,gotWeatherData);
+     input = createInput();
+    let button = createButton('submit');
+      button.mousePressed(updateCity);
+}
+
+
+function updateCity(){
+console.log(input.value());
+city = input.value();
+let weatherlink = weatherapi + city +weatherKey;
+loadJSON(weatherlink,gotWeatherData);
+}
+
+function gotWeatherData(weatherData){
+    console.log(weatherData.weather[0].main);
+giphysearch = weatherData.weather[0].main;
+giphyLink = giphyapi + giphysearch + giphyLimtit;
+loadJSON(giphyLink,gotGiphyData)
+
+} 
+function gotGiphyData(giphyData){
+console.log(giphyData.data[3])
+createImg(giphyData.data[3].images.original.url);
+}
+
