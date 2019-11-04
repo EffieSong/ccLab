@@ -1,0 +1,104 @@
+let hh,clap,bass;//hihat
+let hPat,cPat,bPat;//hihat pattern.array that we can manipulate to make beats
+let hPhrase,cPhrase,bPhrase;//defines how the hihat pattern is interpreted. 
+let drums;
+let bpmCTRL;
+let beatLength;
+let cellWidth;
+let cnv;
+let indexClicked;
+
+
+function setup() {
+  cnv = createCanvas(320, 75);
+  cnv.mousePressed(canvasPressed);
+  rectMode(CENTER);
+  
+  beatLength = 16;
+  cellWidth = width/beatLength;
+    
+  hh = loadSound('assets/hihat-digital.wav',()=>{}); 
+  clap = loadSound('assets/clap_sample.mp3',()=>{}); 
+  bass = loadSound('assets/bass_sample.mp3',()=>{}); 
+  
+  
+  hPat = [1,1,1,1,1,1,1,1,1,1,1,1,1,1,1,1];
+  cPat = [0,0,0,0,1,0,0,1,0,0,0,0,1,0,1,1];
+  bPat = [1,0,0,1,0,0,0,0,1,0,0,1,0,1,0,0];
+  
+  hPhrase = new p5.Phrase('hh',(time)=>{hh.play(time)},hPat);
+    cPhrase = new p5.Phrase('hh',(time)=>{clap.play(time)},cPat);
+    bPhrase = new p5.Phrase('hh',(time)=>{bass.play(time)},bPat);
+  
+  drums = new p5.Part(); 
+  drums.addPhrase(hPhrase);
+  drums.addPhrase(cPhrase);
+  drums.addPhrase(bPhrase);
+  bpmCTRL = createSlider(20,80,20,1);
+  bpmCTRL.position(10,90);
+ drums.setBPM(60);
+  bpmCTRL.input(()=>{drums.setBPM(bpmCTRL.value())});
+
+ 
+
+}
+
+function keyPressed(){
+ if(keyCode === 32){
+    if(hh.isLoaded()&&clap.isLoaded&&bass.isLoaded){
+     if(!drums.isPlaying){
+       drums.loop();
+    }else{
+      drums.stop();
+    }
+     } 
+ }
+  //console.log(keyCode);
+  
+}
+
+function canvasPressed(){
+  let rowClicked = floor(3*mouseY/height);
+  indexClicked = floor(16*mouseX/width);
+  if (rowClicked ===0){
+   console.log('1'+","+indexClicked);
+   hPat[indexClicked] = +!hPat[indexClicked];
+  }else if (rowClicked ===1){
+   console.log('2'+","+indexClicked)
+   cPat[indexClicked] = +!cPat[indexClicked];
+  }else if (rowClicked ===2){
+   console.log('3'+","+indexClicked)
+   bPat[indexClicked] = +!bPat[indexClicked];
+  }
+  drawMatrix()
+}
+  
+
+function drawMatrix() {
+  background(250);
+  stroke('gray');
+  strokeWeight(1);
+  for (let i =0;i < beatLength;i++){
+    line(i*4*cellWidth+0.5*cellWidth,0,i*4*cellWidth+0.5*cellWidth,height); 
+  }
+  // for (let i=0;i<4;i++){
+  //   line(0,i*height/3,width,i*height/3);
+  //   }
+  
+  for (let i =0;i < beatLength;i++){
+    fill('gray');
+    ellipse(i*cellWidth+0.5*cellWidth,height/6,3);
+    ellipse(i*cellWidth+0.5*cellWidth,height/2,3);
+    ellipse(i*cellWidth+0.5*cellWidth,5*height/6,3);
+    fill(255);
+    if(hPat[i]===1){
+  ellipse(i*cellWidth+0.5*cellWidth,height/6,10);
+    }
+    if(cPat[i]===1){
+  ellipse(i*cellWidth+0.5*cellWidth,height/2,10);
+    }
+    if(bPat[i]===1){
+  square(i*cellWidth+0.5*cellWidth,5*height/6,10);
+    }
+  }
+} 
